@@ -24,10 +24,10 @@ namespace KamarCalendar.Controllers
             _ical = ical;
         }
 
-        [HttpGet]
+        [HttpGet("{portalAddress}/{username}/{password}")]
         public async Task<string> Get(string portalAddress, string username, string password)
         {
-            if (portalAddress?.Length > 0)
+            if (portalAddress.Length > 1)
             {
                 _api.PortalAddress = portalAddress;
             }
