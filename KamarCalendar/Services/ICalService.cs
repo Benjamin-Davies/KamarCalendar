@@ -31,11 +31,15 @@ namespace KamarCalendar.Services
                 ical.Begin(VCALENDAR);
                 ical.Prop(VERSION, "2.0");
                 ical.Prop(PRODUCT_ID, "https://github.com/Benjamin-Davies/KamarCalendar/");
+                ical.Prop("X-WR-CALNAME", $"Timetable for student {student.IDNumber}");
+                ical.Prop("X-WR-CALDESC", $"Timetable for student {student.IDNumber}");
+                ical.Prop("X-WR-TIMEZONE", $"Pacific/Auckland");
 
                 ical.Begin(VEVENT);
-                ical.Prop("UID", "123456");
-                ical.Prop("DTSTAMP", "20210201T000000Z");
+                ical.Prop("DTSTART", "20210201T000000Z");
+                ical.Prop("DTEND", "20210201T120000Z");
                 ical.Prop("SUMMARY", student.IDNumber);
+                ical.Prop("DESCRIPTION", student.Tutor);
                 ical.End(VEVENT);
 
                 ical.End(VCALENDAR);
