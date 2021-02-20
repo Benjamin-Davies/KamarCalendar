@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using KamarCalendar.Services;
 
 namespace KamarCalendar.Controllers
 {
@@ -14,11 +15,13 @@ namespace KamarCalendar.Controllers
     {
         private readonly ILogger<ICalController> _logger;
         private readonly Api _api;
+        private readonly ICalService _ical;
 
-        public ICalController(ILogger<ICalController> logger, Api api)
+        public ICalController(ILogger<ICalController> logger, Api api, ICalService ical)
         {
             _logger = logger;
             _api = api;
+            _ical = ical;
         }
 
         [HttpGet]
@@ -30,9 +33,8 @@ namespace KamarCalendar.Controllers
             }
             await _api.Logon(username, password);
 
-            var timetable = await _api.GetStudentTimetable();
-            var student = timetable.Students.First();
-            return student.IDNumber;
+            var calendar = await _ical.GenerateCalendar();
+            return calendar;
         }
     }
 }
