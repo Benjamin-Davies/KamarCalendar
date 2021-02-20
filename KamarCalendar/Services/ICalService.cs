@@ -7,7 +7,8 @@ namespace KamarCalendar.Services
 {
     public class ICalService
     {
-        private const string DATE_FORMAT = "yyyyMMddTHHmmss";
+        private const string TIME_FORMAT = "yyyyMMddTHHmmss";
+        private const string DATE_FORMAT = "yyyyMMdd";
         private const string BEGIN = "BEGIN";
         private const string END = "END";
         private const string VCALENDAR = "VCALENDAR";
@@ -44,8 +45,8 @@ namespace KamarCalendar.Services
                     if (day.Status?.Length > 0)
                     {
                         ical.Begin(VEVENT);
-                        ical.Prop("DTSTART", date.ToString(DATE_FORMAT));
-                        ical.Prop("DTEND", date.AddDays(1).ToString(DATE_FORMAT));
+                        ical.Prop("DTSTART;VALUE=DATE", date.ToString(DATE_FORMAT));
+                        ical.Prop("DTEND;VALUE=DATE", date.AddDays(1).ToString(DATE_FORMAT));
                         ical.Prop("SUMMARY", day.Status);
                         ical.Prop("DESCRIPTION", day.Status);
                         ical.End(VEVENT);
