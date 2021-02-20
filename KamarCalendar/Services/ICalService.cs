@@ -42,6 +42,7 @@ namespace KamarCalendar.Services
                 foreach (var day in calendar.Days)
                 {
                     var date = DateTime.Parse(day.Date);
+
                     if (day.Status?.Length > 0)
                     {
                         ical.Begin(VEVENT);
@@ -50,6 +51,34 @@ namespace KamarCalendar.Services
                         ical.Prop("SUMMARY", day.Status);
                         ical.Prop("DESCRIPTION", day.Status);
                         ical.End(VEVENT);
+                    }
+
+                    if (day.DayTT?.Int != null)
+                    {
+                        var week = day.WeekYear.Int ?? 0;
+                        var dayOfWeek = day.DayTT.Int ?? 0;
+                        var startTimes = globals.StartTimes[dayOfWeek - 1];
+
+                        foreach (var startTime in startTimes)
+                        {
+                            if (startTime?.Time == null || startTime.Time.Length <= 0) continue;
+                            var nextStartTime = startTime.Index < startTimes.Count ? startTimes[startTime.Index] : null;
+
+                            var start = DateTime.Parse(startTime.Time);
+                            var end = nextStartTime?.Time?.Length > 0
+                                ? DateTime.Parse(nextStartTime.Time)
+                                : start.AddHours(1);
+
+                            start = date.Date + start.TimeOfDay;
+                            end = date.Date + end.TimeOfDay;
+
+                            ical.Begin(VEVENT);
+                            ical.Prop("DTSTART", start.ToString(TIME_FORMAT));
+                            ical.Prop("DTEND", end.ToString(TIME_FORMAT));
+                            ical.Prop("SUMMARY", day.Status);
+                            ical.Prop("DESCRIPTION", day.Status);
+                            ical.End(VEVENT);
+                        }
                     }
                 }
 
