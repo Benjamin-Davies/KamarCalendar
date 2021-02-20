@@ -7,6 +7,7 @@ namespace KamarCalendar.Services
 {
     public class ICalService
     {
+        private const string DATE_FORMAT = "yyyyMMddTHHmmssZ";
         private const string BEGIN = "BEGIN";
         private const string END = "END";
         private const string VCALENDAR = "VCALENDAR";
@@ -23,6 +24,8 @@ namespace KamarCalendar.Services
 
         public async Task<string> GenerateCalendar()
         {
+            var globals = await _api.GetGlobals();
+            var calendar = await _api.GetCalendar();
             var timetable = await _api.GetStudentTimetable();
 
             var ical = new ICalBuilder();
@@ -35,12 +38,19 @@ namespace KamarCalendar.Services
                 ical.Prop("X-WR-CALDESC", $"Timetable for student {student.IDNumber}");
                 ical.Prop("X-WR-TIMEZONE", $"Pacific/Auckland");
 
-                ical.Begin(VEVENT);
-                ical.Prop("DTSTART", "20210201T000000Z");
-                ical.Prop("DTEND", "20210201T120000Z");
-                ical.Prop("SUMMARY", student.IDNumber);
-                ical.Prop("DESCRIPTION", student.Tutor);
-                ical.End(VEVENT);
+                foreach (var day in calendar.Days)
+                {
+                    var date = DateTime.Parse(day.Date);
+                    if (day.Status?.Length > 0)
+                    {
+                        ical.Begin(VEVENT);
+                        ical.Prop("DTSTART", date.ToString(DATE_FORMAT));
+                        ical.Prop("DTEND", date.ToString(DATE_FORMAT));
+                        ical.Prop("SUMMARY", day.Status);
+                        ical.Prop("DESCRIPTION", day.Status);
+                        ical.End(VEVENT);
+                    }
+                }
 
                 ical.End(VCALENDAR);
             }
