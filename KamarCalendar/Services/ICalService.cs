@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KAMAR;
@@ -26,17 +27,27 @@ namespace KamarCalendar.Services
         public async Task<string> GenerateCalendar()
         {
             var globals = await _api.GetGlobals();
+            var settings = await _api.GetSettings();
+            var students = await _api.GetStudentDetails();
             var calendar = await _api.GetCalendar();
             var timetable = await _api.GetStudentTimetable();
 
             var ical = new ICalBuilder();
             foreach (var student in timetable.Students)
             {
+                var details = students.Students
+                    .FirstOrDefault(d => d.StudentID == student.IDNumber);
+                var name = details?.FirstName ?? student.IDNumber;
+
                 ical.Begin(VCALENDAR);
                 ical.Prop(VERSION, "2.0");
                 ical.Prop(PRODUCT_ID, "https://github.com/Benjamin-Davies/KamarCalendar/");
-                ical.Prop("X-WR-CALNAME", $"Timetable for student {student.IDNumber}");
-                ical.Prop("X-WR-CALDESC", $"Timetable for student {student.IDNumber}");
+                ical.Prop("X-WR-CALNAME", $"{name}'s Timetable");
+                ical.Prop("X-WR-CALDESC",
+                    "KAMAR Timetable (unofficial)\n" +
+                    $"{settings.SchoolName}\n" +
+                    $"{details?.ForeNames} {details?.LastName}\n" +
+                    $"{student.IDNumber}");
                 ical.Prop("X-WR-TIMEZONE", $"Pacific/Auckland");
 
                 foreach (var day in calendar.Days)

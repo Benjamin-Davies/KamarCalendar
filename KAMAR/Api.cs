@@ -71,6 +71,12 @@ namespace KAMAR
             return res;
         }
 
+        public async Task<StudentDetailsResults> GetStudentDetails()
+        {
+            var res = await sendCommand<StudentDetailsResults>("GetStudentDetails", null);
+            return res;
+        }
+
         public async Task<StudentTimetableResults> GetStudentTimetable(string grid = null)
         {
             if (grid == null)
