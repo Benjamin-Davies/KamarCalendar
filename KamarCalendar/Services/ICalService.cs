@@ -90,6 +90,8 @@ namespace KamarCalendar.Services
                             var period = periods[startTime.Index - 1];
                             if (period?.Class == null || period.Class.Length <= 0) continue;
 
+                            var periodDef = globals.PeriodDefinitions[startTime.Index - 1];
+
                             ical.Begin(VEVENT);
                             ical.Prop("DTSTART", start.ToString(TIME_FORMAT));
                             ical.Prop("DTEND", end.ToString(TIME_FORMAT));
@@ -97,7 +99,7 @@ namespace KamarCalendar.Services
                                 ical.Prop("SUMMARY", $"{period.Class} in {period.Room}");
                             else
                                 ical.Prop("SUMMARY", period.Class);
-                            ical.Prop("DESCRIPTION", $"Type: {period.Type}\nGroup: {period.Group}\nClass: {period.Class}\nTeacher: {period.Teacher}\nRoom: {period.Room}");
+                            ical.Prop("DESCRIPTION", $"{periodDef.PeriodName}\nType: {period.Type}\nGroup: {period.Group}\nClass: {period.Class}\nTeacher: {period.Teacher}\nRoom: {period.Room}");
                             ical.End(VEVENT);
                         }
                     }
