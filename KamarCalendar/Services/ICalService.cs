@@ -58,6 +58,10 @@ namespace KamarCalendar.Services
                         var week = day.WeekYear.Int ?? 0;
                         var dayOfWeek = day.DayTT.Int ?? 0;
                         var startTimes = globals.StartTimes[dayOfWeek - 1];
+                        var periods = student.TimetableData
+                            .Weeks[week - 1]
+                            .Days[dayOfWeek - 1]
+                            .Periods;
 
                         foreach (var startTime in startTimes)
                         {
@@ -72,11 +76,17 @@ namespace KamarCalendar.Services
                             start = date.Date + start.TimeOfDay;
                             end = date.Date + end.TimeOfDay;
 
+                            var period = periods[startTime.Index - 1];
+                            if (period?.Class == null || period.Class.Length <= 0) continue;
+
                             ical.Begin(VEVENT);
                             ical.Prop("DTSTART", start.ToString(TIME_FORMAT));
                             ical.Prop("DTEND", end.ToString(TIME_FORMAT));
-                            ical.Prop("SUMMARY", day.Status);
-                            ical.Prop("DESCRIPTION", day.Status);
+                            if (period.Room.Length > 0)
+                                ical.Prop("SUMMARY", $"{period.Class} in {period.Room}");
+                            else
+                                ical.Prop("SUMMARY", period.Class);
+                            ical.Prop("DESCRIPTION", $"Type: {period.Type}\nGroup: {period.Group}\nClass: {period.Class}\nTeacher: {period.Teacher}\nRoom: {period.Room}");
                             ical.End(VEVENT);
                         }
                     }
@@ -94,7 +104,8 @@ namespace KamarCalendar.Services
 
             public void Begin(string type) => Prop(BEGIN, type);
             public void End(string type) => Prop(END, type);
-            public void Prop(string key, string value) => stringBuilder.AppendLine($"{key}:{value}");
+            public void Prop(string key, string value)
+                => stringBuilder.AppendLine($"{key}:{value.Replace("\n", "\\n")}");
 
             public string Build() => stringBuilder.ToString();
         }
