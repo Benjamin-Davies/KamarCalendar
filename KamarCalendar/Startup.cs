@@ -42,6 +42,9 @@ namespace KamarCalendar
 
             app.UseHttpsRedirection();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthorization();
