@@ -37,7 +37,7 @@ function UrlGen() {
           )
         );
       } catch (e) {
-        setIcalAddress(e.toString());
+        setIcalAddress(e);
       }
     },
     [isMMC, portalAddress, username, password]
@@ -112,8 +112,13 @@ function UrlGen() {
       )
     ),
     e('button', { type: 'submit' }, 'Generate URL'),
-    icalAddress &&
-      e('p', null, e('a', { href: icalAddress, target: '_blank' }, icalAddress))
+    e(
+      'p',
+      null,
+      typeof icalAddress === 'string'
+        ? e('a', { href: icalAddress, target: '_blank' }, icalAddress)
+        : icalAddress?.toString()
+    )
   );
 }
 
