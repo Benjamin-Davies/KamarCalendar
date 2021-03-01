@@ -29,6 +29,7 @@ function UrlGen() {
       ev.preventDefault();
 
       try {
+        setIcalAddress('Loading...');
         setIcalAddress(
           await generateIcalAddress(
             isMMC ? '_' : portalAddress,
@@ -115,7 +116,7 @@ function UrlGen() {
     e(
       'p',
       null,
-      typeof icalAddress === 'string'
+      typeof icalAddress === 'string' && icalAddress.startsWith('http')
         ? e('a', { href: icalAddress, target: '_blank' }, icalAddress)
         : icalAddress?.toString()
     )
@@ -123,7 +124,16 @@ function UrlGen() {
 }
 
 async function generateIcalAddress(portalAddress, username, password) {
-  return `${location.origin}/ICal/${portalAddress}/${username}/${password}`;
+  const key = await getKey(portalAddress, username, password);
+  return `${location.origin}/ICal/${portalAddress}/${key}`;
+}
+
+async function getKey(portalAddress, username, password) {
+  const res = await fetch(`/Logon/${portalAddress}/${username}/${password}`);
+  if (!res.ok) {
+    throw new Error(`Server responded with ${res.status} ${res.statusText}`);
+  }
+  return await res.text();
 }
 
 ReactDOM.render(e(UrlGen), document.getElementById('url-gen-root'));

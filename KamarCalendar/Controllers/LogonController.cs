@@ -11,17 +11,15 @@ namespace KamarCalendar.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ICalController : ControllerBase
+    public class LogonController : ControllerBase
     {
-        private readonly ILogger<ICalController> _logger;
+        private readonly ILogger<LogonController> _logger;
         private readonly Api _api;
-        private readonly ICalService _ical;
 
-        public ICalController(ILogger<ICalController> logger, Api api, ICalService ical)
+        public LogonController(ILogger<LogonController> logger, Api api)
         {
             _logger = logger;
             _api = api;
-            _ical = ical;
         }
 
         [HttpGet("{portalAddress}/{username}/{password}")]
@@ -33,21 +31,7 @@ namespace KamarCalendar.Controllers
             }
             await _api.Logon(username, password);
 
-            var calendar = await _ical.GenerateCalendar();
-            return calendar;
-        }
-
-        [HttpGet("{portalAddress}/{key}")]
-        public async Task<string> Get(string portalAddress, string key)
-        {
-            if (portalAddress.Length > 1)
-            {
-                _api.PortalAddress = portalAddress;
-            }
-            _api.Key = key;
-
-            var calendar = await _ical.GenerateCalendar();
-            return calendar;
+            return _api.Key;
         }
     }
 }
