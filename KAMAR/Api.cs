@@ -78,7 +78,7 @@ namespace KAMAR
 
             var data = new Dictionary<string, string>();
             data.Add("DateStart", $"01/01/{year}");
-            data.Add("DateEnd", $"31/12/{year}");
+            data.Add("DateFinish", $"31/12/{year}");
             data.Add("ShowAll", "YES");
             var res = await sendCommand<EventsResults>("GetEvents", data);
             return res;
