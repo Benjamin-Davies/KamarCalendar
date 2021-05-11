@@ -71,6 +71,19 @@ namespace KAMAR
             return res;
         }
 
+        public async Task<EventsResults> GetEvents(int year = -1)
+        {
+            if (year < 0)
+                year = DateTime.Now.Year;
+
+            var data = new Dictionary<string, string>();
+            data.Add("DateStart", $"01/01/{year}");
+            data.Add("DateEnd", $"31/12/{year}");
+            data.Add("ShowAll", "YES");
+            var res = await sendCommand<EventsResults>("GetEvents", data);
+            return res;
+        }
+
         public async Task<StudentDetailsResults> GetStudentDetails()
         {
             var res = await sendCommand<StudentDetailsResults>("GetStudentDetails", null);
