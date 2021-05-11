@@ -43,9 +43,18 @@ namespace KamarCalendar.Services
 
             foreach (var ev in events.Events)
             {
+                var startDate = ev.Start?.Replace("-", "") ?? "";
+                var endDate = ev.End?.Replace("-", "") ?? "";
+                var startTime = ev.DateTimeStart?.Replace(":", "") ?? "";
+                var endTime = ev.DateTimeEnd?.Replace(":", "") ?? "";
+
+                if (endDate.Length <= 0) endDate = startDate;
+                if (startTime.Length <= 0) startTime = "000000";
+                if (endTime.Length <= 0) endTime = startTime;
+
                 ical.Begin(VEVENT);
-                ical.Prop("DTSTART", $"{ev.Start.Replace("-", "")}T{ev.DateTimeStart?.Replace(":", "") ?? "000000"}");
-                ical.Prop("DTEND", $"{ev.End.Replace("-", "")}T{ev.DateTimeEnd?.Replace(":", "") ?? "240000"}");
+                ical.Prop("DTSTART", $"{startDate}T{startTime}");
+                ical.Prop("DTEND", $"{endDate}T{endTime}");
                 ical.Prop("SUMMARY", ev.Title);
                 ical.Prop("DESCRIPTION", ev.Details);
                 ical.Prop("LOCATION", ev.Location);
