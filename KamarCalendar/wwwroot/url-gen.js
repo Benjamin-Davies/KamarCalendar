@@ -6,6 +6,7 @@ function UrlGen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [icalAddress, setIcalAddress] = useState(null);
+  const [eventsAddress, setEventsAddress] = useState(null);
 
   const onChange = useCallback(({ target }) => {
     switch (target.name) {
@@ -28,11 +29,14 @@ function UrlGen() {
     async (ev) => {
       ev.preventDefault();
 
+      const addr = isMMC ? '_' : portalAddress;
+
       try {
+        setEventsAddress(`${location.origin}/Events/${addr}`);
         setIcalAddress('Loading...');
         setIcalAddress(
           await generateIcalAddress(
-            isMMC ? '_' : portalAddress,
+            addr,
             username,
             password
           )
@@ -116,9 +120,18 @@ function UrlGen() {
     e(
       'p',
       null,
+      icalAddress && 'Timetable: ',
       typeof icalAddress === 'string' && icalAddress.startsWith('http')
         ? e('a', { href: icalAddress, target: '_blank' }, icalAddress)
         : icalAddress?.toString()
+    ),
+    e(
+      'p',
+      null,
+      eventsAddress && 'Events: ',
+      typeof eventsAddress === 'string' && eventsAddress.startsWith('http')
+        ? e('a', { href: eventsAddress, target: '_blank' }, eventsAddress)
+        : eventsAddress?.toString()
     )
   );
 }
